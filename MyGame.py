@@ -7,6 +7,8 @@ from settings import Settings
 from game_stats import GameStats
 from scoreboard import Scoreboard
 from button import Button
+from optionsButton import OptionsButton
+from closeButton import CloseButton
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
@@ -41,8 +43,10 @@ class AlienInvasion:
         #start alien invasion as inactive state.
         self.game_active = False
 
-        #make the play button
+        #make the buttons
         self.play_button = Button(self, "Play")
+        self.options_button = OptionsButton(self, "Options")
+        self.close_button = CloseButton(self, "Exit")
 
     def run_game(self):
 
@@ -70,9 +74,9 @@ class AlienInvasion:
                     self._check_keyup_events(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
-                    self._check_play_button(mouse_pos)
+                    self._check_button(mouse_pos)
 
-    def _check_play_button(self, mouse_pos):
+    def _check_button(self, mouse_pos):
         """Start a new game when the play presses play"""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.game_active:
@@ -95,6 +99,14 @@ class AlienInvasion:
             #hide the mouse cursor
             pygame.mouse.set_visible(False)
 
+        optionsButton_clicked = self.options_button.rect.collidepoint(mouse_pos)
+        if optionsButton_clicked:
+            sys.exit()
+        
+        CloseButton_clicked = self.close_button.rect.collidepoint(mouse_pos)
+        if CloseButton_clicked:
+            sys.exit()
+
     def _check_keydown_events(self, event):
         """Responds to key presses"""
         if event.key == pygame.K_RIGHT:
@@ -107,6 +119,8 @@ class AlienInvasion:
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
+        elif event.key == pygame.K_ESCAPE:
+            self._pause_game()
 
     def _check_keyup_events(self, event):
         """Responds to key releases"""
@@ -216,6 +230,8 @@ class AlienInvasion:
         #Draw the play button if the game is inactive
         if not self.game_active:
             self.play_button.draw_button()
+            self.options_button.draw_button()
+            self.close_button.draw_button()
 
         pygame.display.flip()
     
@@ -245,12 +261,9 @@ class AlienInvasion:
                 #tread this the same as if the ship got hit
                 self._ship_hit()
                 break
-
-    # def _main_menu_screen(self):
-    #     pygame.display.set_caption("Main Menu")
-    #     while True:
-            
-
+    def _pause_game(self):
+        self.game_active = False
+        pygame.mouse.set_visible(True)    
 
 if __name__ == '__main__':
     ai = AlienInvasion()
