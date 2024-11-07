@@ -107,6 +107,8 @@ class AlienInvasion:
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
+        elif event.key == pygame.K_ESCAPE:
+            self._pause_game()
 
     def _check_keyup_events(self, event):
         """Responds to key releases"""
@@ -245,6 +247,9 @@ class AlienInvasion:
                 #tread this the same as if the ship got hit
                 self._ship_hit()
                 break
+    def _pause_game(self):
+        self.game_active = False
+        pygame.mouse.set_visible(True)
 
     # def _main_menu_screen(self):
     #     pygame.display.set_caption("Main Menu")
