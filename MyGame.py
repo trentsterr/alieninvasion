@@ -10,6 +10,7 @@ from button import Button
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
+from pygame._sdl2 import Window
 
 class AlienInvasion:
     """Overall Class to manage game assets and behavior"""
@@ -19,7 +20,8 @@ class AlienInvasion:
         self.clock = pygame.time.Clock()
         self.settings = Settings()
 
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
+        Window.from_display_module().maximize()
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption("Alien Invasion")
@@ -243,6 +245,12 @@ class AlienInvasion:
                 #tread this the same as if the ship got hit
                 self._ship_hit()
                 break
+
+    # def _main_menu_screen(self):
+    #     pygame.display.set_caption("Main Menu")
+    #     while True:
+            
+
 
 if __name__ == '__main__':
     ai = AlienInvasion()
