@@ -7,7 +7,7 @@ class Settings:
         self.bg_color = (230, 230, 230)
 
         #ship settings
-        self.ship_speed = 3000.5
+        self.ship_speed = 1.5
         self.ship_limit = 3
 
         #bullet settings
@@ -32,7 +32,7 @@ class Settings:
 
     def initialize_dynamic_settings(self):
         """Initialize settings that change throughout the game"""
-        self.ship_speed = 10.5
+        self.ship_speed = 5.5
         self.bullet_speed = 2.5
         self.alien_speed = 1.0
 
