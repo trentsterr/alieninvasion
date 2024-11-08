@@ -16,11 +16,13 @@ from pygame._sdl2 import Window
 
 class AlienInvasion:
     """Overall Class to manage game assets and behavior"""
+    
 
     def __init__(self):
         pygame.init()
         self.clock = pygame.time.Clock()
         self.settings = Settings()
+        
 
         self.screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
         Window.from_display_module().maximize()
@@ -47,6 +49,8 @@ class AlienInvasion:
         self.play_button = Button(self, "Play")
         self.options_button = OptionsButton(self, "Options")
         self.close_button = CloseButton(self, "Exit")
+
+        
 
     def run_game(self):
 
@@ -98,6 +102,8 @@ class AlienInvasion:
 
             #hide the mouse cursor
             pygame.mouse.set_visible(False)
+            pygame.mixer.music.load('sound/8-bit-space-123218.mp3')
+            pygame.mixer.music.play(-1)
 
         optionsButton_clicked = self.options_button.rect.collidepoint(mouse_pos)
         if optionsButton_clicked:
@@ -119,8 +125,11 @@ class AlienInvasion:
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
+            #self._play_lazer_sound()
+            
         elif event.key == pygame.K_ESCAPE:
             self._pause_game()
+            pygame.mixer.music.pause()
 
     def _check_keyup_events(self, event):
         """Responds to key releases"""
@@ -134,6 +143,13 @@ class AlienInvasion:
         if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
+            self._play_lazer_sound()
+
+    def _play_lazer_sound(self):
+        if self.game_active == True:
+            lazer_sound = pygame.mixer.Sound('sound/retro-laser-1-236669.mp3')
+            pygame.mixer.Sound.play(lazer_sound)
+
 
     def _create_fleet(self):
         """Create fleet of alients"""
