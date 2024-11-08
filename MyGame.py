@@ -111,6 +111,8 @@ class AlienInvasion:
         
         CloseButton_clicked = self.close_button.rect.collidepoint(mouse_pos)
         if CloseButton_clicked:
+            path = Path('high_score.txt')
+            path.write_text(str(self.stats.high_score))
             sys.exit()
 
     def _check_keydown_events(self, event):
@@ -125,7 +127,6 @@ class AlienInvasion:
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
-            #self._play_lazer_sound()
             
         elif event.key == pygame.K_ESCAPE:
             self._pause_game()
