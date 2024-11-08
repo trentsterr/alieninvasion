@@ -15,8 +15,8 @@ class CloseButton:
         self.font = pygame.font.SysFont(None, 48)
 
         #build the buttons rect object and center it
-        self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.midbottom = self.screen_rect.midbottom
+        self.rect = pygame.Rect(660, 600, self.width, self.height)
+        #self.rect.midtop = self.screen_rect.midtop
 
         #the button message needs to be prepped only once
         self._prep_msg(msg)
@@ -24,8 +24,8 @@ class CloseButton:
     def _prep_msg(self, msg):
         """Turn msg into a rendered image and center text on the button"""
         self.msg_image = self.font.render(msg, True, self.text_color, self.button_color)
-        self.msg_image_rect = self.msg_image.get_rect()
-        self.msg_image_rect.midbottom = self.rect.midbottom
+        self.msg_image_rect = self.msg_image.get_rect(center = (760, 625))
+        #self.msg_image_rect.center = self.rect.center
     
     def draw_button(self):
         """Draw blank button and then draw message"""
