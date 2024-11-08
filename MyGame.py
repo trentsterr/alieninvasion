@@ -1,5 +1,6 @@
 import sys
 from time import sleep
+from turtle import Screen
 import pygame
 
 from pathlib import Path
@@ -14,12 +15,14 @@ from bullet import Bullet
 from alien import Alien
 from pygame._sdl2 import Window
 
+
+
 class AlienInvasion:
     """Overall Class to manage game assets and behavior"""
-    
 
     def __init__(self):
         pygame.init()
+        
         self.clock = pygame.time.Clock()
         self.settings = Settings()
         
@@ -50,8 +53,6 @@ class AlienInvasion:
         self.options_button = OptionsButton(self, "Options")
         self.close_button = CloseButton(self, "Exit")
 
-        
-
     def run_game(self):
 
         while True:
@@ -61,11 +62,10 @@ class AlienInvasion:
                 self.ship.update()
                 self._update_bullets()
                 self._update_aliens()
-
+            
             self._update_screen()
             self.clock.tick(60)
 
-            # Redraw screen during each pass through loop
 
     def _check_events(self):
         """Respond to keypresses and mouse events"""
@@ -130,7 +130,7 @@ class AlienInvasion:
             
         elif event.key == pygame.K_ESCAPE:
             self._pause_game()
-            pygame.mixer.music.pause()
+            
 
     def _check_keyup_events(self, event):
         """Responds to key releases"""
@@ -250,7 +250,9 @@ class AlienInvasion:
             self.options_button.draw_button()
             self.close_button.draw_button()
 
+
         pygame.display.flip()
+
     
     def _ship_hit(self):
         """Respond to the ship being hit by the aliens."""
@@ -278,9 +280,43 @@ class AlienInvasion:
                 #tread this the same as if the ship got hit
                 self._ship_hit()
                 break
+
     def _pause_game(self):
-        self.game_active = False
-        pygame.mouse.set_visible(True)    
+        
+        if self.game_active == True:
+            is_paused = True
+            #Create paued loop
+
+            while is_paused:
+
+                self.image = pygame.image.load("images/PAUSED.png") # Replace with your image path
+                self.rect = self.image.get_rect()
+
+                basicfont = pygame.font.SysFont(None, 48)
+                text = basicfont.render('PAUSED', True, (255, 0, 0), (255, 255, 255))
+                dest = (700, 400)
+                self.screen.blit(text, dest)
+                pygame.display.flip()
+                # def _draw_text(text, font, text_col, x, y):
+                #     img = font.render(text, True, text_col)
+                #     self.screen.blit(img, (x, y))
+                pygame.mouse.set_visible(True)    
+                pygame.mixer.music.pause()
+                
+                # text_font = pygame.font.SysFont("Arial", 30)
+                # _draw_text(f"PAUSED", text_font, (30, 30, 30), 220, 150)
+                for event in pygame.event.get():    
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            is_paused = False
+                            pygame.mouse.set_visible(False)
+                            pygame.mixer.music.unpause()
+                        elif event.key == pygame.K_q:
+                            pygame.QUIT()
+                    if event.type == pygame.QUIT:
+                        is_paused = False
+                        sys.exit()
+                
 
 if __name__ == '__main__':
     ai = AlienInvasion()
