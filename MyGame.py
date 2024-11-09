@@ -47,6 +47,7 @@ class AlienInvasion:
         self.bg_color = (230, 230, 230)
         #start alien invasion as inactive state.
         self.game_active = False
+        is_paused = False
 
         #make the buttons
         self.play_button = Button(self, "Play")
@@ -103,6 +104,7 @@ class AlienInvasion:
             #hide the mouse cursor
             pygame.mouse.set_visible(False)
             pygame.mixer.music.load('sound/8-bit-space-123218.mp3')
+            pygame.mixer.music.set_volume(0.5)
             pygame.mixer.music.play(-1)
 
         optionsButton_clicked = self.options_button.rect.collidepoint(mouse_pos)
@@ -149,8 +151,9 @@ class AlienInvasion:
     def _play_lazer_sound(self):
         if self.game_active == True:
             lazer_sound = pygame.mixer.Sound('sound/retro-laser-1-236669.mp3')
+            lazer_sound.set_volume(0.3)
             pygame.mixer.Sound.play(lazer_sound)
-
+ 
 
     def _create_fleet(self):
         """Create fleet of alients"""
@@ -311,7 +314,11 @@ class AlienInvasion:
                             is_paused = False
                             pygame.mouse.set_visible(False)
                             pygame.mixer.music.unpause()
+                            self.ship.moving_right = False
+                            self.ship.moving_left = False
                         elif event.key == pygame.K_q:
+                            path = Path('high_score.txt')
+                            path.write_text(str(self.stats.high_score))
                             pygame.QUIT()
                     if event.type == pygame.QUIT:
                         is_paused = False
