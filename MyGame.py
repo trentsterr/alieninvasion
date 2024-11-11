@@ -301,12 +301,12 @@ class AlienInvasion:
                 # self.screen.blit(text, dest)
                 
 
-                self.controlsimage = pygame.image.load("images/OPTIONS.png") # Replace with your image path
+                self.controlsimage = pygame.image.load("images/PAUSED.png") # Replace with your image path
                 self.controlsrect = self.controlsimage.get_rect()
         #basicfont = pygame.font.SysFont(None, 48)
         #text = basicfont.render('CONTROLS: <-- to go left\n--> to go right\nSPACE to shoot bullets\nESC to pause\nQ to quit', True, (255, 0, 0), (255, 255, 255))
         
-                controlsdest = (300, 200)
+                controlsdest = (315, 150)
                 self.screen.blit(self.controlsimage, controlsdest)
                 pygame.display.update()
 
@@ -330,6 +330,8 @@ class AlienInvasion:
                             pygame.QUIT()
                         elif event.key == pygame.K_RETURN:
                             is_paused = False
+                            pygame.mouse.set_visible(False)
+                            pygame.mixer.music.unpause()
                     if event.type == pygame.QUIT:
                         is_paused = False
                         sys.exit()
@@ -348,7 +350,7 @@ class AlienInvasion:
                 #basicfont = pygame.font.SysFont(None, 48)
                 #text = basicfont.render('CONTROLS: <-- to go left\n--> to go right\nSPACE to shoot bullets\nESC to pause\nQ to quit', True, (255, 0, 0), (255, 255, 255))
         
-                dest = (400, 300)
+                dest = (300, 125)
                 self.screen.blit(self.image, dest)
                 pygame.display.update()
                 pygame.display.flip()
@@ -357,6 +359,10 @@ class AlienInvasion:
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_RETURN:
                             is_paused = False
+                        elif event.key == pygame.K_q:
+                            path = Path('high_score.txt')
+                            path.write_text(str(self.stats.high_score))
+                            pygame.QUIT()
 
 if __name__ == '__main__':
     ai = AlienInvasion()
