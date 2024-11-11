@@ -1,5 +1,6 @@
 import sys
 from time import sleep
+from turtle import Screen
 import pygame
 
 from pathlib import Path
@@ -7,18 +8,24 @@ from settings import Settings
 from game_stats import GameStats
 from scoreboard import Scoreboard
 from button import Button
+from controlsButton import ControlsButton
+from closeButton import CloseButton
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
 from pygame._sdl2 import Window
+
+
 
 class AlienInvasion:
     """Overall Class to manage game assets and behavior"""
 
     def __init__(self):
         pygame.init()
+        
         self.clock = pygame.time.Clock()
         self.settings = Settings()
+        
 
         self.screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
         Window.from_display_module().maximize()
@@ -40,9 +47,12 @@ class AlienInvasion:
         self.bg_color = (230, 230, 230)
         #start alien invasion as inactive state.
         self.game_active = False
+        is_paused = False
 
-        #make the play button
+        #make the buttons
         self.play_button = Button(self, "Play")
+        self.controls_button = ControlsButton(self, "Controls")
+        self.close_button = CloseButton(self, "Exit")
 
     def run_game(self):
 
@@ -53,11 +63,10 @@ class AlienInvasion:
                 self.ship.update()
                 self._update_bullets()
                 self._update_aliens()
-
+            
             self._update_screen()
             self.clock.tick(60)
 
-            # Redraw screen during each pass through loop
 
     def _check_events(self):
         """Respond to keypresses and mouse events"""
@@ -70,9 +79,9 @@ class AlienInvasion:
                     self._check_keyup_events(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
-                    self._check_play_button(mouse_pos)
+                    self._check_button(mouse_pos)
 
-    def _check_play_button(self, mouse_pos):
+    def _check_button(self, mouse_pos):
         """Start a new game when the play presses play"""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.game_active:
@@ -94,6 +103,19 @@ class AlienInvasion:
 
             #hide the mouse cursor
             pygame.mouse.set_visible(False)
+            pygame.mixer.music.load('sound/8-bit-space-123218.mp3')
+            pygame.mixer.music.set_volume(0.5)
+            pygame.mixer.music.play(-1)
+
+        controlsButton_clicked = self.controls_button.rect.collidepoint(mouse_pos)
+        if controlsButton_clicked:
+            self._controls_Menu_Selected()
+        
+        CloseButton_clicked = self.close_button.rect.collidepoint(mouse_pos)
+        if CloseButton_clicked:
+            path = Path('high_score.txt')
+            path.write_text(str(self.stats.high_score))
+            sys.exit()
 
     def _check_keydown_events(self, event):
         """Responds to key presses"""
@@ -107,6 +129,10 @@ class AlienInvasion:
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
+            
+        elif event.key == pygame.K_ESCAPE:
+            self._pause_game()
+            
 
     def _check_keyup_events(self, event):
         """Responds to key releases"""
@@ -120,6 +146,14 @@ class AlienInvasion:
         if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
+            self._play_lazer_sound()
+
+    def _play_lazer_sound(self):
+        if self.game_active == True:
+            lazer_sound = pygame.mixer.Sound('sound/retro-laser-1-236669.mp3')
+            lazer_sound.set_volume(0.3)
+            pygame.mixer.Sound.play(lazer_sound)
+ 
 
     def _create_fleet(self):
         """Create fleet of alients"""
@@ -216,8 +250,12 @@ class AlienInvasion:
         #Draw the play button if the game is inactive
         if not self.game_active:
             self.play_button.draw_button()
+            self.controls_button.draw_button()
+            self.close_button.draw_button()
+
 
         pygame.display.flip()
+
     
     def _ship_hit(self):
         """Respond to the ship being hit by the aliens."""
@@ -246,11 +284,79 @@ class AlienInvasion:
                 self._ship_hit()
                 break
 
-    # def _main_menu_screen(self):
-    #     pygame.display.set_caption("Main Menu")
-    #     while True:
-            
+    def _pause_game(self):
+        
+        if self.game_active == True:
+            is_paused = True
+            #Create paued loop
 
+            while is_paused:
+
+                #self.image = pygame.image.load("images/PAUSED.png") # Replace with your image path
+                #self.rect = self.image.get_rect()
+
+                # basicfont = pygame.font.SysFont(None, 48)
+                # text = basicfont.render('PAUSED', True, (255, 0, 0), (255, 255, 255))
+                # dest = (700, 400)
+                # self.screen.blit(text, dest)
+                
+
+                self.controlsimage = pygame.image.load("images/OPTIONS.png") # Replace with your image path
+                self.controlsrect = self.controlsimage.get_rect()
+        #basicfont = pygame.font.SysFont(None, 48)
+        #text = basicfont.render('CONTROLS: <-- to go left\n--> to go right\nSPACE to shoot bullets\nESC to pause\nQ to quit', True, (255, 0, 0), (255, 255, 255))
+        
+                controlsdest = (300, 200)
+                self.screen.blit(self.controlsimage, controlsdest)
+                pygame.display.update()
+
+
+
+                pygame.display.flip()
+                pygame.mouse.set_visible(True)    
+                pygame.mixer.music.pause()
+                
+                for event in pygame.event.get():    
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            is_paused = False
+                            pygame.mouse.set_visible(False)
+                            pygame.mixer.music.unpause()
+                            self.ship.moving_right = False
+                            self.ship.moving_left = False
+                        elif event.key == pygame.K_q:
+                            path = Path('high_score.txt')
+                            path.write_text(str(self.stats.high_score))
+                            pygame.QUIT()
+                        elif event.key == pygame.K_RETURN:
+                            is_paused = False
+                    if event.type == pygame.QUIT:
+                        is_paused = False
+                        sys.exit()
+
+                    
+
+
+    def _controls_Menu_Selected(self):
+        if self.game_active == False:
+            is_paused = True
+            #Create paued loop
+
+            while is_paused:
+                self.image = pygame.image.load("images/OPTIONS.png") # Replace with your image path
+                self.rect = self.image.get_rect()
+                #basicfont = pygame.font.SysFont(None, 48)
+                #text = basicfont.render('CONTROLS: <-- to go left\n--> to go right\nSPACE to shoot bullets\nESC to pause\nQ to quit', True, (255, 0, 0), (255, 255, 255))
+        
+                dest = (400, 300)
+                self.screen.blit(self.image, dest)
+                pygame.display.update()
+                pygame.display.flip()
+
+                for event in pygame.event.get():    
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_RETURN:
+                            is_paused = False
 
 if __name__ == '__main__':
     ai = AlienInvasion()

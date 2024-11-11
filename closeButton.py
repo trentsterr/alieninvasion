@@ -1,6 +1,6 @@
 import pygame.font
 
-class Button:
+class CloseButton:
     """A class to build buttons for the game"""
 
     def __init__(self, ai_game, msg):
@@ -15,7 +15,7 @@ class Button:
         self.font = pygame.font.SysFont(None, 48)
 
         #build the buttons rect object and center it
-        self.rect = pygame.Rect(660, 200, self.width, self.height)
+        self.rect = pygame.Rect(660, 600, self.width, self.height)
         #self.rect.midtop = self.screen_rect.midtop
 
         #the button message needs to be prepped only once
@@ -24,7 +24,7 @@ class Button:
     def _prep_msg(self, msg):
         """Turn msg into a rendered image and center text on the button"""
         self.msg_image = self.font.render(msg, True, self.text_color, self.button_color)
-        self.msg_image_rect = self.msg_image.get_rect(center = (760, 225))
+        self.msg_image_rect = self.msg_image.get_rect(center = (760, 625))
         #self.msg_image_rect.center = self.rect.center
     
     def draw_button(self):
