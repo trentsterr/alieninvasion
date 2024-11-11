@@ -8,7 +8,7 @@ from settings import Settings
 from game_stats import GameStats
 from scoreboard import Scoreboard
 from button import Button
-from optionsButton import OptionsButton
+from controlsButton import ControlsButton
 from closeButton import CloseButton
 from ship import Ship
 from bullet import Bullet
@@ -51,7 +51,7 @@ class AlienInvasion:
 
         #make the buttons
         self.play_button = Button(self, "Play")
-        self.options_button = OptionsButton(self, "Options")
+        self.controls_button = ControlsButton(self, "Controls")
         self.close_button = CloseButton(self, "Exit")
 
     def run_game(self):
@@ -107,9 +107,9 @@ class AlienInvasion:
             pygame.mixer.music.set_volume(0.5)
             pygame.mixer.music.play(-1)
 
-        optionsButton_clicked = self.options_button.rect.collidepoint(mouse_pos)
-        if optionsButton_clicked:
-            sys.exit()
+        controlsButton_clicked = self.controls_button.rect.collidepoint(mouse_pos)
+        if controlsButton_clicked:
+            self._controls_Menu_Selected()
         
         CloseButton_clicked = self.close_button.rect.collidepoint(mouse_pos)
         if CloseButton_clicked:
@@ -250,7 +250,7 @@ class AlienInvasion:
         #Draw the play button if the game is inactive
         if not self.game_active:
             self.play_button.draw_button()
-            self.options_button.draw_button()
+            self.controls_button.draw_button()
             self.close_button.draw_button()
 
 
@@ -292,22 +292,30 @@ class AlienInvasion:
 
             while is_paused:
 
-                self.image = pygame.image.load("images/PAUSED.png") # Replace with your image path
-                self.rect = self.image.get_rect()
+                #self.image = pygame.image.load("images/PAUSED.png") # Replace with your image path
+                #self.rect = self.image.get_rect()
 
-                basicfont = pygame.font.SysFont(None, 48)
-                text = basicfont.render('PAUSED', True, (255, 0, 0), (255, 255, 255))
-                dest = (700, 400)
-                self.screen.blit(text, dest)
+                # basicfont = pygame.font.SysFont(None, 48)
+                # text = basicfont.render('PAUSED', True, (255, 0, 0), (255, 255, 255))
+                # dest = (700, 400)
+                # self.screen.blit(text, dest)
+                
+
+                self.controlsimage = pygame.image.load("images/OPTIONS.png") # Replace with your image path
+                self.controlsrect = self.controlsimage.get_rect()
+        #basicfont = pygame.font.SysFont(None, 48)
+        #text = basicfont.render('CONTROLS: <-- to go left\n--> to go right\nSPACE to shoot bullets\nESC to pause\nQ to quit', True, (255, 0, 0), (255, 255, 255))
+        
+                controlsdest = (300, 200)
+                self.screen.blit(self.controlsimage, controlsdest)
+                pygame.display.update()
+
+
+
                 pygame.display.flip()
-                # def _draw_text(text, font, text_col, x, y):
-                #     img = font.render(text, True, text_col)
-                #     self.screen.blit(img, (x, y))
                 pygame.mouse.set_visible(True)    
                 pygame.mixer.music.pause()
                 
-                # text_font = pygame.font.SysFont("Arial", 30)
-                # _draw_text(f"PAUSED", text_font, (30, 30, 30), 220, 150)
                 for event in pygame.event.get():    
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
@@ -320,10 +328,35 @@ class AlienInvasion:
                             path = Path('high_score.txt')
                             path.write_text(str(self.stats.high_score))
                             pygame.QUIT()
+                        elif event.key == pygame.K_RETURN:
+                            is_paused = False
                     if event.type == pygame.QUIT:
                         is_paused = False
                         sys.exit()
-                
+
+                    
+
+
+    def _controls_Menu_Selected(self):
+        if self.game_active == False:
+            is_paused = True
+            #Create paued loop
+
+            while is_paused:
+                self.image = pygame.image.load("images/OPTIONS.png") # Replace with your image path
+                self.rect = self.image.get_rect()
+                #basicfont = pygame.font.SysFont(None, 48)
+                #text = basicfont.render('CONTROLS: <-- to go left\n--> to go right\nSPACE to shoot bullets\nESC to pause\nQ to quit', True, (255, 0, 0), (255, 255, 255))
+        
+                dest = (400, 300)
+                self.screen.blit(self.image, dest)
+                pygame.display.update()
+                pygame.display.flip()
+
+                for event in pygame.event.get():    
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_RETURN:
+                            is_paused = False
 
 if __name__ == '__main__':
     ai = AlienInvasion()
